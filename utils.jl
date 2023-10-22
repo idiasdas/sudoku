@@ -137,3 +137,27 @@ function string_to_sudoku(sudoku_txt::String)::Array{Int,2}
     return sudoku' # Returns the transpose
 end
 
+function read_database(filename::String, puzzle::Int)::Tuple{Matrix{Int}, Matrix{Int}}
+    """Reads the csv file with puzzles and solutions
+
+    Args:
+        filename: Name of the database
+        puzzle: Number of the puzzle to read
+
+    Returns: A tuple with two matrixes: the puzzle and the solution
+    """
+
+    open(filename,"r") do in_file
+        # Ignores lines before the puzzle. Including the csv header.
+        for i in (1:puzzle)
+            readline(in_file)
+        end
+        # Each line contains two sequences of digits separated by a comma.
+        line = readline(in_file)
+        exp = r"(\d+),(\d+)"
+        m = match(exp, line)
+        sudoku = string_to_sudoku(String(m[1]))
+        solution = string_to_sudoku(String(m[2]))
+        return sudoku, solution
+    end
+end
