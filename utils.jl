@@ -104,35 +104,17 @@ function sudoku_is_valid(board::Matrix{Int})::Bool
     @assert size(board) == (9, 9)
     @assert all(∈(0:9), board)
 
-    # No repeated numbers in each line
-    for line in eachrow(board)
-        for number in (1:9)
-            if (count(x -> x == number, line) > 1)
-                return false
-            end
-        end
+    # No repeated numbers in each line or column
+    for i in 1:9
+        block_is_valid(vec(board[i, :])) || return false
+        block_is_valid(vec(board[:, i])) || return false
     end
 
-    # No repeated numbers in each column
-    for column in eachcol(board)
-        for number in (1:9)
-            if (count(x -> x == number, column) > 1)
-                return false
-            end
-        end
-    end
-
-    # No repeated numbers in each sector
-    for line_sector in (0:2)
-        for column_sector in (0:2)
-            sector = board[3*line_sector + 1 : 3*line_sector+ 3, 3*column_sector+ 1 : 3*column_sector + 3]
-            for number in (1:9)
-                if (count(x -> x == number, sector) > 1)
-                    return false
+    # No repeated numbers in each block
+    for ii in partition(1:9, 3), jj in partition(1:9, 3)
+        block_is_valid(vec(board[ii, jj])) || return false
                 end
-            end
-        end
-    end
+
     return true
 end
 
