@@ -28,3 +28,75 @@ function write_value!(value::Int, pos_x::Int, pos_y::Int, board::Matrix{Int})::B
     end
 end
 
+function main_loop()::Nothing
+    commands_list = """help: Shows this list.
+    exit: Closes the program.
+    open x: Opens sudoku puzze number `x`.
+    write value x y: Writes `value` at (`x`,`y`).
+    undo: Undo the last move.
+    show_moves: Shows the list of moves done so far."""
+
+    board = Matrix{Int}(undef, 0, 0)
+    original = Matrix{Int}(undef, 0, 0)
+    solution = Matrix{Int}(undef, 0, 0)
+    puzzle = 0
+    moves = []
+
+
+    println("Let's play. Type `help` to see the available commands.")
+    while true
+        if ! isempty(board)
+            print_colored_sudoku(board, original)
+        end
+        print("Enter command: ")
+        cmd = readline()
+        if cmd == "exit"
+            println("Exiting program.")
+            break
+        elseif cmd == "help"
+            println(commands_list)
+        elseif startswith(cmd, "open")
+            try
+                puzzle = parse(Int, split(cmd, " ")[2])
+                @assert isa(puzzle, Int)
+                original,solution = read_database("sudoku.csv", puzzle)
+                board = copy(original)
+                moves = []
+            catch e
+                println("Problem reading puzzle $(puzzle) from database sudoku.csv")
+                println(e)
+            end
+        elseif startswith(cmd, "write ")
+            try
+                value = parse(Int , split(cmd, " ")[2])
+                x = parse(Int , split(cmd, " ")[3])
+                y = parse(Int , split(cmd, " ")[4])
+                @assert write_value!(value,x,y,board)
+                push!(moves,(value,x,y))
+            catch e
+                println("Problem writting value on board!")
+                println(e)
+            end
+        elseif cmd == "show_moves"
+            if ! isempty(moves)
+                println("The following moves were made in this board:")
+                for move in moves
+                    println(move)
+                end
+            else
+                println("The board has no changes.")
+            end
+        elseif cmd == "undo"
+            if ! isempty(moves)
+                move = pop!(moves)
+                board[move[2],move[3]] = 0
+            else
+                println("There is nothing to undo.")
+            end
+        else
+            println("Unknown command. Type `help` for ... help.")
+        end
+    end
+end
+
+main_loop()
