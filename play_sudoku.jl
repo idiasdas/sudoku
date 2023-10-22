@@ -39,7 +39,7 @@ function main_loop()::Nothing
     board = Matrix{Int}(undef, 0, 0)
     original = Matrix{Int}(undef, 0, 0)
     solution = Matrix{Int}(undef, 0, 0)
-    puzzle = 0
+    puzzle_number = 0
     moves = []
 
 
@@ -49,28 +49,30 @@ function main_loop()::Nothing
             print_colored_sudoku(board, original)
         end
         print("Enter command: ")
-        cmd = readline()
+        cmd_line = readline()
+        cmd = split(cmd_line, " ")[1]
+        args = length(split(cmd_line, " ")) >1 ? split(cmd_line, " ")[2:end] : []
         if cmd == "exit"
             println("Exiting program.")
             break
         elseif cmd == "help"
             println(commands_list)
-        elseif startswith(cmd, "open")
+        elseif cmd == "open"
             try
-                puzzle = parse(Int, split(cmd, " ")[2])
-                @assert isa(puzzle, Int)
-                original,solution = read_database("sudoku.csv", puzzle)
+                puzzle_number = parse(Int, args[1])
+                @assert isa(puzzle_number, Int)
+                original,solution = read_database("sudoku.csv", puzzle_number)
                 board = copy(original)
                 moves = []
             catch e
-                println("Problem reading puzzle $(puzzle) from database sudoku.csv")
+                println("Problem reading puzzle from database sudoku.csv")
                 println(e)
             end
-        elseif startswith(cmd, "write ")
+        elseif cmd == "write"
             try
-                value = parse(Int , split(cmd, " ")[2])
-                x = parse(Int , split(cmd, " ")[3])
-                y = parse(Int , split(cmd, " ")[4])
+                value = parse(Int, args[1])
+                x = parse(Int, args[2])
+                y = parse(Int, args[3])
                 @assert write_value!(value,x,y,board)
                 push!(moves,(value,x,y))
             catch e
