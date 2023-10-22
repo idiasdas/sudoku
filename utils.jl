@@ -1,8 +1,8 @@
 using Base.Iterators: partition, repeated
 using CSV
-using Crayons
+# using Crayons
 
-function print_sudoku(sudoku::Array{Int, 2})::Nothing
+function print_sudoku(sudoku::Matrix{Int})::Nothing
     """Prints a sudoku to the console.
 
     Args:
@@ -29,7 +29,7 @@ function print_sudoku(sudoku::Array{Int, 2})::Nothing
     end
 end
 
-function print_colored_line(line::Array{Int}, original::Array{Int})::Nothing
+function print_colored_line(line::Vector{Int}, original::Vector{Int})::Nothing
     """Prints the current board line. Shows the original numbers in green.
 
     Args:
@@ -44,7 +44,7 @@ function print_colored_line(line::Array{Int}, original::Array{Int})::Nothing
     for i in 1:3:9
         for j in i:i+2
             if line[j] != 0 && line[j] == original[j]
-                print(Crayon(foreground = :green)( " ", string(line[j])))
+                printstyled(" ", string(line[j]), color = :green)
             else
                 print(" ", chars[line[j] + 1])
             end
@@ -75,7 +75,7 @@ function print_colored_sudoku(board:: Matrix{Int}, original::Matrix{Int})::Nothi
     end
 end
 
-function sudoku_is_valid(board::Array{Int, 2})::Bool
+function sudoku_is_valid(board::Matrix{Int})::Bool
     """Checks if a board is valid. Can contain only number between 0 and 9. Any number from 1 to 9 cannot appear twice on a row, column, or slice.
 
     Args:
@@ -119,7 +119,7 @@ function sudoku_is_valid(board::Array{Int, 2})::Bool
     return true
 end
 
-function string_to_sudoku(sudoku_txt::String)::Array{Int,2}
+function string_to_sudoku(sudoku_txt::String)::Matrix{Int}
     """Reads a sequence of 81 characters and returns an Integer matrix 9x9.
 
     Args:
