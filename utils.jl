@@ -119,3 +119,21 @@ function sudoku_is_valid(board::Array{Int, 2})::Bool
     return true
 end
 
+function string_to_sudoku(sudoku_txt::String)::Array{Int,2}
+    """Reads a sequence of 81 characters and returns an Integer matrix 9x9.
+
+    Args:
+        sudoku_txt: An string representing a sudoku board.
+
+    Returns:
+        The sudoku board as a matrix.
+    """
+    @assert length(sudoku_txt) == 81
+    sudoku = zeros(Int, 9, 9)
+
+    for (i, num) in enumerate(sudoku_txt)
+        sudoku[i] = Int(num) - Int('0')
+    end
+    return sudoku' # Returns the transpose
+end
+
