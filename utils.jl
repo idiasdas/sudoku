@@ -75,6 +75,23 @@ function print_colored_sudoku(board:: Matrix{Int}, original::Matrix{Int})::Nothi
     end
 end
 
+function block_is_valid(block::Vector{Int})::Bool
+    """Checks if a block is valid. Can contain only number between 0 and 9. Any number from 1 to 9 cannot appear twice.
+
+    Args:
+        block: A vector of 9 integers between 0 and 9.
+
+    Returns:
+        True if the block is valid, False otherwise.
+    """
+    @assert all(∈(0:9), block)
+    count_num = zeros(Int, 10)
+    for x in block
+        count_num[x + 1] += 1
+    end
+    return all(<=(1), count_num[2:end])
+end
+
 function sudoku_is_valid(board::Matrix{Int})::Bool
     """Checks if a board is valid. Can contain only number between 0 and 9. Any number from 1 to 9 cannot appear twice on a row, column, or slice.
 
