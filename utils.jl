@@ -149,17 +149,11 @@ function write_value!(move::Move, board::Matrix{UInt8})::Bool
         board: The current board.
 
     Returns:
-        If this new value leads to an invalid board, the value is not written and returns false.
         If the current value board[pos_x, pos_y] is 0, the value is updated to 'value' and returns true. Otherwise it returns false.
     """
     @assert sudoku_is_valid(board)
     @assert all(∈(1:9), (move.value, move.row, move.col))
-
     board[move.row, move.col] == 0 ? board[move.row, move.col] = move.value : return false
-    if !sudoku_is_valid(board)
-        board[move.row, move.col] = 0
-        return false
-    end
     return true
 end
 
