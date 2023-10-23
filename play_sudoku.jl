@@ -1,6 +1,6 @@
 include("utils.jl")
 
-function write_value!(value::Int, pos_x::Int, pos_y::Int, board::Matrix{Int})::Bool
+function write_value!(value::UInt8, pos_x::UInt8, pos_y::UInt8, board::Matrix{UInt8})::Bool
     """ Tries to write a `value` on `board[pos_x, pos_y]`. You cannot overwrite values different than 0.
 
     Args:
@@ -37,9 +37,9 @@ function main_loop()::Nothing
     show_moves: Shows the list of moves done so far.
     check: Shows if any of the moves done so far are not in the solution."""
 
-    board = Matrix{Int}(undef, 0, 0)
-    original = Matrix{Int}(undef, 0, 0)
-    solution = Matrix{Int}(undef, 0, 0)
+    board = Matrix{UInt8}(undef, 0, 0)
+    original = Matrix{UInt8}(undef, 0, 0)
+    solution = Matrix{UInt8}(undef, 0, 0)
     puzzle_number = 0
     moves = []
     mistakes = []
@@ -62,7 +62,6 @@ function main_loop()::Nothing
         elseif cmd == "open"
             try
                 puzzle_number = parse(Int, args[1])
-                @assert isa(puzzle_number, Int)
                 original, solution = read_database("sudoku.csv", puzzle_number)
                 board = copy(original)
                 moves = []
@@ -72,9 +71,9 @@ function main_loop()::Nothing
             end
         elseif cmd == "write"
             try
-                value = parse(Int, args[1])
-                x = parse(Int, args[2])
-                y = parse(Int, args[3])
+                value = parse(UInt8, args[1])
+                x = parse(UInt8, args[2])
+                y = parse(UInt8, args[3])
                 write_value!(value, x, y, board) || throw(ArgumentError("Invalid move!"))
                 push!(moves, (value, x, y))
             catch e

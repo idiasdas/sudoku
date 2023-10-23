@@ -1,8 +1,20 @@
 using Base.Iterators: partition, repeated
 using CSV
-# using Crayons
 
-function print_sudoku(sudoku::Matrix{Int})::Nothing
+# struct Move
+#     """Represents a move in the sudoku board.
+
+#     Attributes:
+#         row: The row of the move.
+#         col: The column of the move.
+#         value: The value of the move.
+#     """
+#     row::UInt8
+#     col::UInt8
+#     value::UInt8
+# end
+
+function print_sudoku(sudoku::Matrix{UInt8})::Nothing
     """Prints a sudoku to the console.
 
     Args:
@@ -29,7 +41,7 @@ function print_sudoku(sudoku::Matrix{Int})::Nothing
     end
 end
 
-function print_colored_line(line::Vector{Int}, moves::Vector{Any}, mistakes::Vector{Any} = [])::Nothing
+function print_colored_line(line::Vector{UInt8}, moves::Vector{Any}, mistakes::Vector{Any} = [])::Nothing
     """Prints the current board line.
 
     Args:
@@ -55,7 +67,7 @@ function print_colored_line(line::Vector{Int}, moves::Vector{Any}, mistakes::Vec
     println("\b ")
 end
 
-function print_colored_sudoku(board:: Matrix{Int}, moves::Vector{Any}, mistakes::Vector{Any} = [])::Nothing
+function print_colored_sudoku(board:: Matrix{UInt8}, moves::Vector{Any}, mistakes::Vector{Any} = [])::Nothing
     """Prints a sudoku to the console with colors. The initial values are shown in green.
 
     Args:
@@ -77,7 +89,7 @@ function print_colored_sudoku(board:: Matrix{Int}, moves::Vector{Any}, mistakes:
     end
 end
 
-function block_is_valid(block::Vector{Int})::Bool
+function block_is_valid(block::Vector{UInt8})::Bool
     """Checks if a block is valid. Can contain only number between 0 and 9. Any number from 1 to 9 cannot appear twice.
 
     Args:
@@ -95,7 +107,7 @@ function block_is_valid(block::Vector{Int})::Bool
     return all(<=(1), count_num[2:end])
 end
 
-function sudoku_is_valid(board::Matrix{Int})::Bool
+function sudoku_is_valid(board::Matrix{UInt8})::Bool
     """Checks if a board is valid. Can contain only number between 0 and 9. Any number from 1 to 9 cannot appear twice on a row, column, or slice.
 
     Args:
@@ -121,7 +133,7 @@ function sudoku_is_valid(board::Matrix{Int})::Bool
     return true
 end
 
-function string_to_sudoku(sudoku_txt::String)::Matrix{Int}
+function string_to_sudoku(sudoku_txt::String)::Matrix{UInt8}
     """Reads a sequence of 81 characters and returns an Integer matrix 9x9.
 
     Args:
@@ -131,7 +143,7 @@ function string_to_sudoku(sudoku_txt::String)::Matrix{Int}
         The sudoku board as a matrix.
     """
     @assert length(sudoku_txt) == 81
-    sudoku = zeros(Int, 9, 9)
+    sudoku = zeros(UInt8, 9, 9)
 
     for (i, num) in enumerate(sudoku_txt)
         sudoku[i] = Int(num) - Int('0')
@@ -139,7 +151,7 @@ function string_to_sudoku(sudoku_txt::String)::Matrix{Int}
     return sudoku' # Returns the transpose
 end
 
-function read_database(filename::String, puzzle_number::Int)::Tuple{Matrix{Int}, Matrix{Int}}
+function read_database(filename::String, puzzle_number::Int)::Tuple{Matrix{UInt8}, Matrix{UInt8}}
     """Reads the csv file with puzzles and solutions
 
     Args:
