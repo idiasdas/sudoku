@@ -1,12 +1,10 @@
 include("utils.jl")
 
-function write_value!(value::UInt8, pos_x::UInt8, pos_y::UInt8, board::Matrix{UInt8})::Bool
+function write_value!(move::Move, board::Matrix{UInt8})::Bool
     """ Tries to write a `value` on `board[pos_x, pos_y]`. You cannot overwrite values different than 0.
 
     Args:
-        value: The new value.
-        pos_x: X coordinate on the board.
-        pos_y: Y coordinate on the board.
+        move: The move to be written.
         board: The current board.
 
     Returns:
@@ -14,18 +12,33 @@ function write_value!(value::UInt8, pos_x::UInt8, pos_y::UInt8, board::Matrix{UI
         If the current value board[pos_x, pos_y] is 0, the value is updated to 'value' and returns true. Otherwise it returns false.
     """
     @assert sudoku_is_valid(board)
-    @assert all(∈(1:9), (value, pos_x, pos_y))
-    old_value = board[pos_x, pos_y]
-    if  old_value != 0
+    @assert all(∈(1:9), (move.value, move.row, move.col))
+
+    board[move.row, move.col] == 0 ? board[move.row, move.col] = move.value : return false
+    if !sudoku_is_valid(board)
+        board[move.row, move.col] = 0
         return false
     end
-    board[pos_x, pos_y] = value
-    if ! sudoku_is_valid(board)
-        board[pos_x, pos_y] = old_value
+    return true
+end
+
+function undo!(moves::Vector{Move}, board::Matrix{UInt8})::Bool
+    """Undoes the last move in the board.
+
+    Args:
+        moves: The list of moves done so far.
+        board: The current board.
+
+    Returns:
+        If there is a move to undo, it is undone and returns true. Otherwise it returns false.
+    """
+    @assert sudoku_is_valid(board)
+    if isempty(moves)
         return false
-    else
-        return true
     end
+    move = pop!(moves)
+    board[move.row, move.col] = 0
+    return true
 end
 
 function main_loop()::Nothing
@@ -71,11 +84,9 @@ function main_loop()::Nothing
             end
         elseif cmd == "write"
             try
-                value = parse(UInt8, args[1])
-                x = parse(UInt8, args[2])
-                y = parse(UInt8, args[3])
-                write_value!(value, x, y, board) || throw(ArgumentError("Invalid move!"))
-                push!(moves, Move(x, y, value))
+                move = Move(parse(UInt8, args[2]), parse(UInt8, args[3]), parse(UInt8, args[1]))
+                write_value!(move, board) || throw(ArgumentError("Invalid move!"))
+                push!(moves, move)
             catch e
                 println("Problem writting value on board!")
                 println(e)
@@ -84,18 +95,13 @@ function main_loop()::Nothing
             if ! isempty(moves)
                 println("The following moves were made in this board:")
                 for move in moves
-                    println(move)
+                    println("\t($(move.row), $(move.col)) = $(move.value)")
                 end
             else
                 println("The board has no changes.")
             end
         elseif cmd == "undo"
-            if ! isempty(moves)
-                move = pop!(moves)
-                board[move.row, move.col] = 0
-            else
-                println("There is nothing to undo.")
-            end
+            undo!(moves, board) || println("There is nothing to undo.")
         elseif cmd == "check"
             mistakes = [move for move in moves if move.value != solution[move.row, move.col]]
         else
