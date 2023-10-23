@@ -7,7 +7,7 @@ struct Move
     value::UInt8
 end
 
-function print_colored_line(line::Vector{UInt8}, line_number::Int, moves::Vector{Move}, mistakes::Vector{Move} = [])::Nothing
+function print_colored_line(line::Vector{UInt8}, line_number::Int, moves::Vector{Move}, mistakes::Vector{Move} = Move[])::Nothing
     """Prints the current board line.
 
     Args:
@@ -34,7 +34,7 @@ function print_colored_line(line::Vector{UInt8}, line_number::Int, moves::Vector
     println("\b ")
 end
 
-function print_colored_sudoku(board:: Matrix{UInt8}, moves::Vector{Move}, mistakes::Vector{Move} = [])::Nothing
+function print_colored_sudoku(board:: Matrix{UInt8}, moves::Vector{Move}, mistakes::Vector{Move} = Move[])::Nothing
     """Prints a sudoku to the console with colors. The initial values are shown in green.
 
     Args:
