@@ -7,22 +7,23 @@ struct Move
     value::UInt8
 end
 
-function print_colored_line(line::Vector{UInt8}, moves::Vector{Move}, mistakes::Vector{Move} = [])::Nothing
+function print_colored_line(line::Vector{UInt8}, line_number::Int, moves::Vector{Move}, mistakes::Vector{Move} = [])::Nothing
     """Prints the current board line.
 
     Args:
-        board: The current line.
-        moves: A list of the changes done in the board.
-        mistakes: A list of the mistakes done in the board.
+        line: A vector of 9 integers between 0 and 9.
+        line_number: The line number.
+        moves: The list of changes done it the board.
+        mistakes: The list of mistakes done in the board.
     """
     @assert size(line) == (9,)
     @assert all(∈(0:9), line)
     chars = (' ' , '1':'9'...)
     for i in 1:3:9
         for j in i:i+2
-            if Move(i, j, line[j]) in mistakes
+            if Move(line_number, j, line[j]) in mistakes
                 printstyled(" ", string(line[j]), color = :red)
-            elseif Move(i, j, line[j]) in moves
+            elseif Move(line_number, j, line[j]) in moves
                 printstyled(" ", string(line[j]), color = :green)
             else
                 print(" ", chars[line[j] + 1])
@@ -50,7 +51,7 @@ function print_colored_sudoku(board:: Matrix{UInt8}, moves::Vector{Move}, mistak
     for i in 1:3:9
         isfirst ? (isfirst = false) : println(separatorrow)
         for j in i:i+2
-            print_colored_line(board[j,:],moves, mistakes)
+            print_colored_line(board[j,:], j, moves, mistakes)
         end
     end
 end
@@ -167,7 +168,6 @@ function undo!(moves::Vector{Move}, board::Matrix{UInt8})::Bool
     Returns:
         If there is a move to undo, it is undone and returns true. Otherwise it returns false.
     """
-    @assert sudoku_is_valid(board)
     if isempty(moves)
         return false
     end
