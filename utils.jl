@@ -140,3 +140,44 @@ function read_database(filename::String, puzzle_number::Int)::Tuple{Matrix{UInt8
         return sudoku, solution
     end
 end
+
+function write_value!(move::Move, board::Matrix{UInt8})::Bool
+    """ Tries to write a `value` on `board[pos_x, pos_y]`. You cannot overwrite values different than 0.
+
+    Args:
+        move: The move to be written.
+        board: The current board.
+
+    Returns:
+        If this new value leads to an invalid board, the value is not written and returns false.
+        If the current value board[pos_x, pos_y] is 0, the value is updated to 'value' and returns true. Otherwise it returns false.
+    """
+    @assert sudoku_is_valid(board)
+    @assert all(∈(1:9), (move.value, move.row, move.col))
+
+    board[move.row, move.col] == 0 ? board[move.row, move.col] = move.value : return false
+    if !sudoku_is_valid(board)
+        board[move.row, move.col] = 0
+        return false
+    end
+    return true
+end
+
+function undo!(moves::Vector{Move}, board::Matrix{UInt8})::Bool
+    """Undoes the last move in the board.
+
+    Args:
+        moves: The list of moves done so far.
+        board: The current board.
+
+    Returns:
+        If there is a move to undo, it is undone and returns true. Otherwise it returns false.
+    """
+    @assert sudoku_is_valid(board)
+    if isempty(moves)
+        return false
+    end
+    move = pop!(moves)
+    board[move.row, move.col] = 0
+    return true
+end
