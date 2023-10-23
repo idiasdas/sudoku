@@ -29,21 +29,24 @@ function print_sudoku(sudoku::Matrix{Int})::Nothing
     end
 end
 
-function print_colored_line(line::Vector{Int}, original::Vector{Int})::Nothing
+function print_colored_line(line::Vector{Int}, moves::Vector{Tuple{Int}}, mistakes::Vector{Tuple{Int}} = [])::Nothing
     """Prints the current board line. Shows the original numbers in green.
 
     Args:
         board: The current line.
-        original: The initial state of the line.
+        moves: A list of the changes done in the board.
+        mistakes: A list of the mistakes done in the board.
     """
     @assert size(line) == (9,)
     @assert all(∈(0:9), line)
-    @assert size(original) == (9,)
+    @assert size(moves) == (3,)
     @assert all(∈(0:9), original)
     chars = (' ' , '1':'9'...)
     for i in 1:3:9
         for j in i:i+2
-            if line[j] != 0 && line[j] == original[j]
+            if (line[j], i, j) in mistakes
+                printstyled(" ", string(line[j]), color = :red)
+            elseif (line[j], i, j) in moves
                 printstyled(" ", string(line[j]), color = :green)
             else
                 print(" ", chars[line[j] + 1])
@@ -54,12 +57,13 @@ function print_colored_line(line::Vector{Int}, original::Vector{Int})::Nothing
     println("\b ")
 end
 
-function print_colored_sudoku(board:: Matrix{Int}, original::Matrix{Int})::Nothing
+function print_colored_sudoku(board:: Matrix{Int}, moves::Vector{Tuple{Int}},mistakes::Vector{Tuple{Int}} = [])::Nothing
     """Prints a sudoku to the console with colors. The initial values are shown in green.
 
     Args:
         board: A 9x9 array of integers between 0 and 9.
-        original: The initial values of the board.
+        moves: The list of changes done it the board.
+        mistakes: The list of mistakes done in the board.
     """
     @assert size(board) == (9, 9)
     @assert all(∈(0:9), board)
@@ -70,7 +74,7 @@ function print_colored_sudoku(board:: Matrix{Int}, original::Matrix{Int})::Nothi
     for i in 1:3:9
         isfirst ? (isfirst = false) : println(separatorrow)
         for j in i:i+2
-            print_colored_line(board[j,:],original[j,:])
+            print_colored_line(board[j,:],moves, mistakes)
         end
     end
 end
@@ -114,7 +118,7 @@ function sudoku_is_valid(board::Matrix{Int})::Bool
     # No repeated numbers in each block
     for ii in partition(1:9, 3), jj in partition(1:9, 3)
         block_is_valid(vec(board[ii, jj])) || return false
-                end
+    end
 
     return true
 end
