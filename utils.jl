@@ -85,6 +85,7 @@ function block_is_valid(block::Vector{Int})::Bool
         True if the block is valid, False otherwise.
     """
     @assert all(∈(0:9), block)
+    @assert lenght(block) == 9
     count_num = zeros(Int, 10)
     for x in block
         count_num[x + 1] += 1
