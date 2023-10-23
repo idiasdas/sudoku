@@ -41,14 +41,14 @@ function main_loop()::Nothing
     original = Matrix{UInt8}(undef, 0, 0)
     solution = Matrix{UInt8}(undef, 0, 0)
     puzzle_number = 0
-    moves = []
-    mistakes = []
+    moves = Move[]
+    mistakes = Move[]
 
     println("Let's play. Type `help` to see the available commands.")
     while true
         if ! isempty(board)
             print_colored_sudoku(board, moves, mistakes)
-            mistakes = []
+            mistakes = Move[]
         end
         print("\nEnter command: ")
         cmd_line = readline()
@@ -64,7 +64,7 @@ function main_loop()::Nothing
                 puzzle_number = parse(Int, args[1])
                 original, solution = read_database("sudoku.csv", puzzle_number)
                 board = copy(original)
-                moves = []
+                moves = Vector{Move}(undef, 0)
             catch e
                 println("Problem reading puzzle from database sudoku.csv")
                 println(e)
@@ -75,7 +75,7 @@ function main_loop()::Nothing
                 x = parse(UInt8, args[2])
                 y = parse(UInt8, args[3])
                 write_value!(value, x, y, board) || throw(ArgumentError("Invalid move!"))
-                push!(moves, (value, x, y))
+                push!(moves, Move(x, y, value))
             catch e
                 println("Problem writting value on board!")
                 println(e)
@@ -92,17 +92,12 @@ function main_loop()::Nothing
         elseif cmd == "undo"
             if ! isempty(moves)
                 move = pop!(moves)
-                board[move[2], move[3]] = 0
+                board[move.row, move.col] = 0
             else
                 println("There is nothing to undo.")
             end
         elseif cmd == "check"
-            mistakes = []
-            for x in moves
-                if board[x[2], x[3]] != solution[x[2], x[3]]
-                    push!(mistakes, x)
-                end
-            end
+            mistakes = [move for move in moves if move.value != solution[move.row, move.col]]
         else
             println("Unknown command. Type `help` for ... help.")
         end

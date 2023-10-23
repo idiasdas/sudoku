@@ -1,47 +1,13 @@
 using Base.Iterators: partition, repeated
 using CSV
 
-# struct Move
-#     """Represents a move in the sudoku board.
-
-#     Attributes:
-#         row: The row of the move.
-#         col: The column of the move.
-#         value: The value of the move.
-#     """
-#     row::UInt8
-#     col::UInt8
-#     value::UInt8
-# end
-
-function print_sudoku(sudoku::Matrix{UInt8})::Nothing
-    """Prints a sudoku to the console.
-
-    Args:
-        sudoku: A 9x9 array of integers between 0 and 9.
-    """
-    @assert size(sudoku) == (9, 9)
-    @assert all(∈(0:9), sudoku)
-
-    # "───────┼───────┼───────"
-    separatorrow = join(repeated('─'^7, 3), '┼')
-    # "0123456789"
-    chars = (' ' , '1':'9'...)
-    isfirst = true
-
-    for rows in partition(eachrow(sudoku), 3)
-        isfirst ? (isfirst = false) : println(separatorrow)
-        for row in rows
-            for triple in partition(row, 3)
-                print.(' ', chars[triple .+ 1])
-                print(" │")
-            end
-            println("\b ")
-        end
-    end
+struct Move
+    row::UInt8
+    col::UInt8
+    value::UInt8
 end
 
-function print_colored_line(line::Vector{UInt8}, moves::Vector{Any}, mistakes::Vector{Any} = [])::Nothing
+function print_colored_line(line::Vector{UInt8}, moves::Vector{Move}, mistakes::Vector{Move} = [])::Nothing
     """Prints the current board line.
 
     Args:
@@ -54,9 +20,9 @@ function print_colored_line(line::Vector{UInt8}, moves::Vector{Any}, mistakes::V
     chars = (' ' , '1':'9'...)
     for i in 1:3:9
         for j in i:i+2
-            if (line[j], i, j) in mistakes
+            if Move(i, j, line[j]) in mistakes
                 printstyled(" ", string(line[j]), color = :red)
-            elseif (line[j], i, j) in moves
+            elseif Move(i, j, line[j]) in moves
                 printstyled(" ", string(line[j]), color = :green)
             else
                 print(" ", chars[line[j] + 1])
@@ -67,7 +33,7 @@ function print_colored_line(line::Vector{UInt8}, moves::Vector{Any}, mistakes::V
     println("\b ")
 end
 
-function print_colored_sudoku(board:: Matrix{UInt8}, moves::Vector{Any}, mistakes::Vector{Any} = [])::Nothing
+function print_colored_sudoku(board:: Matrix{UInt8}, moves::Vector{Move}, mistakes::Vector{Move} = [])::Nothing
     """Prints a sudoku to the console with colors. The initial values are shown in green.
 
     Args:
@@ -146,7 +112,7 @@ function string_to_sudoku(sudoku_txt::String)::Matrix{UInt8}
     sudoku = zeros(UInt8, 9, 9)
 
     for (i, num) in enumerate(sudoku_txt)
-        sudoku[i] = Int(num) - Int('0')
+        sudoku[i] = UInt8(num) - UInt8('0')
     end
     return sudoku' # Returns the transpose
 end
