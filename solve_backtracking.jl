@@ -41,9 +41,7 @@ function solve_backtraking!(board::Matrix{UInt8}, show_process::Bool = false)::T
     while true
         if sudoku_is_valid(board)
             cur_x, cur_y = get_first_empty_cell(board)
-            if cur_x == 0
-                break
-            end
+            cur_x != 0 || break
             next_move = Move(cur_x, cur_y, 1)
             write_value!(next_move, board)
             push!(moves, next_move)
