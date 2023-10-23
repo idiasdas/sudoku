@@ -29,8 +29,8 @@ function print_sudoku(sudoku::Matrix{Int})::Nothing
     end
 end
 
-function print_colored_line(line::Vector{Int}, moves::Vector{Tuple{Int}}, mistakes::Vector{Tuple{Int}} = [])::Nothing
-    """Prints the current board line. Shows the original numbers in green.
+function print_colored_line(line::Vector{Int}, moves::Vector{Any}, mistakes::Vector{Any} = [])::Nothing
+    """Prints the current board line.
 
     Args:
         board: The current line.
@@ -39,8 +39,6 @@ function print_colored_line(line::Vector{Int}, moves::Vector{Tuple{Int}}, mistak
     """
     @assert size(line) == (9,)
     @assert all(∈(0:9), line)
-    @assert size(moves) == (3,)
-    @assert all(∈(0:9), original)
     chars = (' ' , '1':'9'...)
     for i in 1:3:9
         for j in i:i+2
@@ -57,7 +55,7 @@ function print_colored_line(line::Vector{Int}, moves::Vector{Tuple{Int}}, mistak
     println("\b ")
 end
 
-function print_colored_sudoku(board:: Matrix{Int}, moves::Vector{Tuple{Int}},mistakes::Vector{Tuple{Int}} = [])::Nothing
+function print_colored_sudoku(board:: Matrix{Int}, moves::Vector{Any}, mistakes::Vector{Any} = [])::Nothing
     """Prints a sudoku to the console with colors. The initial values are shown in green.
 
     Args:
@@ -89,7 +87,7 @@ function block_is_valid(block::Vector{Int})::Bool
         True if the block is valid, False otherwise.
     """
     @assert all(∈(0:9), block)
-    @assert lenght(block) == 9
+    @assert length(block) == 9
     count_num = zeros(Int, 10)
     for x in block
         count_num[x + 1] += 1

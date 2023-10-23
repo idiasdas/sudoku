@@ -32,23 +32,25 @@ function main_loop()::Nothing
     commands_list = """help: Shows this list.
     exit: Closes the program.
     open x: Opens sudoku puzze number `x`.
-    write value x y: Writes `value` at (`x`,`y`).
+    write value x y: Writes `value` at (`x`, `y`).
     undo: Undo the last move.
-    show_moves: Shows the list of moves done so far."""
+    show_moves: Shows the list of moves done so far.
+    check: Shows if any of the moves done so far are not in the solution."""
 
     board = Matrix{Int}(undef, 0, 0)
     original = Matrix{Int}(undef, 0, 0)
     solution = Matrix{Int}(undef, 0, 0)
     puzzle_number = 0
     moves = []
-
+    mistakes = []
 
     println("Let's play. Type `help` to see the available commands.")
     while true
         if ! isempty(board)
-            print_colored_sudoku(board, original)
+            print_colored_sudoku(board, moves, mistakes)
+            mistakes = []
         end
-        print("Enter command: ")
+        print("\nEnter command: ")
         cmd_line = readline()
         cmd = split(cmd_line, " ")[1]
         args = length(split(cmd_line, " ")) >1 ? split(cmd_line, " ")[2:end] : []
@@ -61,7 +63,7 @@ function main_loop()::Nothing
             try
                 puzzle_number = parse(Int, args[1])
                 @assert isa(puzzle_number, Int)
-                original,solution = read_database("sudoku.csv", puzzle_number)
+                original, solution = read_database("sudoku.csv", puzzle_number)
                 board = copy(original)
                 moves = []
             catch e
@@ -73,8 +75,8 @@ function main_loop()::Nothing
                 value = parse(Int, args[1])
                 x = parse(Int, args[2])
                 y = parse(Int, args[3])
-                @assert write_value!(value,x,y,board)
-                push!(moves,(value,x,y))
+                write_value!(value, x, y, board) || throw(ArgumentError("Invalid move!"))
+                push!(moves, (value, x, y))
             catch e
                 println("Problem writting value on board!")
                 println(e)
@@ -91,9 +93,16 @@ function main_loop()::Nothing
         elseif cmd == "undo"
             if ! isempty(moves)
                 move = pop!(moves)
-                board[move[2],move[3]] = 0
+                board[move[2], move[3]] = 0
             else
                 println("There is nothing to undo.")
+            end
+        elseif cmd == "check"
+            mistakes = []
+            for x in moves
+                if board[x[2], x[3]] != solution[x[2], x[3]]
+                    push!(mistakes, x)
+                end
             end
         else
             println("Unknown command. Type `help` for ... help.")
