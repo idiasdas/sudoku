@@ -1,6 +1,14 @@
 include("utils.jl")
 
 function get_first_empty_cell(board::Matrix{UInt8})::Tuple{Int, Int}
+    """Returns the coordinates of the first empty cell in the board.
+
+    Args:
+        board: A 9x9 array of integers between 0 and 9.
+
+        Returns:
+            A tuple with the coordinates of the first empty cell. If there is no empty cell, returns (0, 0).
+    """
     for i in 1:9, j in 1:9
         if board[i, j] == 0
             return i, j
@@ -9,7 +17,13 @@ function get_first_empty_cell(board::Matrix{UInt8})::Tuple{Int, Int}
     return 0, 0
 end
 
-function backtrack!(moves::Vector{Move}, board::Matrix{UInt8})
+function backtrack!(moves::Vector{Move}, board::Matrix{UInt8})::Nothing
+    """Goes back one move and tries the next value. If the current value is 9, goes back another move and tries the next value.
+
+    Args:
+        moves: The list of changes done it the board.
+        board: A 9x9 array of integers between 0 and 9.
+    """
     if moves[end].value == 9
         undo!(moves, board)
         backtrack!(moves, board)
@@ -19,6 +33,7 @@ function backtrack!(moves::Vector{Move}, board::Matrix{UInt8})
         write_value!(next_move, board)
         push!(moves, next_move)
     end
+    return nothing
 end
 
 function solve_backtraking!(board::Matrix{UInt8}, show_process::Bool = false)::Tuple{Vector{Move}, Int}
