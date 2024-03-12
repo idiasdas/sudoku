@@ -2,12 +2,10 @@
 
 #define POSITION(row, col) (row*9 + col)
 
-/**
- * @brief Reads the sudoku from the console and store it in the sudoku array.
- *
- * @param sudoku The array where the sudoku will be stored.
- */
 void read_sudoku( unsigned char *sudoku){
+    /*
+        Reads the sudoku from the console and store it in the sudoku array.
+    */
     char temp;
     for(int i = 0; i < 81; i++){
         std::cin >> temp;
@@ -15,12 +13,10 @@ void read_sudoku( unsigned char *sudoku){
     }
 }
 
-/**
- * @brief Prints the sudoku in the console in a human readable format.
- *
- * @param sudoku The array where the sudoku is stored.
- */
 void print_sudoku( unsigned char *sudoku){
+    /*
+        Prints the sudoku in the console in a human readable format.
+    */
     for(int i = 0; i < 81; i++){
         std::cout << (int) sudoku[i] << " ";
         if((i+1) % 9 == 0){
@@ -29,15 +25,11 @@ void print_sudoku( unsigned char *sudoku){
     }
 }
 
-/**
- * @brief Returns false if a number is repeared in a 3x3 cell starting at cell_position. It does not consider the 0s as repeated numbers.
- *
- * @param sudoku The array where the sudoku is stored.
- * @param cell_position The position of the top left cell of the 3x3 cell in the sudoku array.
- * @return true
- * @return false
- */
 bool verify_cell(unsigned char *sudoku, int cell_position){
+    /*
+        Returns false if a number is repeared in a 3x3 cell starting at cell_position.
+        It does not consider the 0s as repeated numbers.
+    */
     unsigned char cell_count[9] = {0,0,0,0,0,0,0,0,0};
     unsigned char row = (unsigned char) cell_position / 9;
     unsigned char col = (unsigned char) cell_position % 9;
@@ -54,15 +46,11 @@ bool verify_cell(unsigned char *sudoku, int cell_position){
     return true;
 }
 
-/**
- * @brief  Returns false if a number is repeared in any 3x3 cell in the sudoku.
-    It does not consider the 0s as repeated numbers.
- *
- * @param sudoku
- * @return true
- * @return false
- */
 bool verify_cells(unsigned char *sudoku){
+    /*
+        Returns false if a number is repeated in any 3x3 cell in the sudoku.
+        It does not consider the 0s as repeated numbers.
+    */
     for (int i = 0; i < 3; i++){
         for (int j = 0; j <3; j++){
             if (!verify_cell(sudoku, POSITION(i*3, j*3))) return false;
@@ -71,14 +59,10 @@ bool verify_cells(unsigned char *sudoku){
     return true;
 }
 
-/**
- * @brief Verifies if any number is repeated in any row or column of the sudoku.
- *
- * @param sudoku
- * @return true
- * @return false
- */
 bool verify_rows_and_cols(unsigned char *sudoku){
+    /*
+        Verifies if any number is repeated in any row or column of the sudoku.
+    */
     unsigned char row_count[9] = {0,0,0,0,0,0,0,0,0};
     unsigned char col_count[9] = {0,0,0,0,0,0,0,0,0};
     unsigned char current_value;
@@ -105,7 +89,7 @@ bool verify_rows_and_cols(unsigned char *sudoku){
 
 int main(){
     /*
-    Reads a sudoku from the command line, prints it in a readable format and verify its validity.
+        Reads a sudoku from the command line, prints it in a readable format and verify its validity.
     */
     unsigned char sudoku[81];
     read_sudoku(sudoku);
