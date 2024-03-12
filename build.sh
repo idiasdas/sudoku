@@ -1,3 +1,4 @@
 #!/bin/sh
 
-cmake -G "Codelite - Unix Makefiles" -DCMAKE_BUILD_TYPE=Debug
+cmake -S . -B build/
+cmake --build build/.
