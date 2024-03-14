@@ -3,6 +3,11 @@
 #include <string>
 #include <exception>
 
+struct position{
+    int row;
+    int col;
+};
+
 void readSudoku( unsigned char sudoku[][9]){
     /*
         Reads the sudoku from the console and store it in the sudoku array.
@@ -138,16 +143,72 @@ void copySudoku(unsigned char sudoku[][9], unsigned char copy[][9]){
     }
 }
 
+position findEmptyCell(unsigned char sudoku[][9]){
+    /*
+        Returns the position of the first empty cell in the sudoku.
+    */
+    position empty_cell;
+    empty_cell.row = -1;
+    empty_cell.col = -1;
+    for (int i = 0; i < 81; i++){
+        if (sudoku[i/9][i%9] == 0){
+            empty_cell.row = i/9;
+            empty_cell.col = i%9;
+            break;
+        }
+    }
+    return empty_cell;
+}
+
+bool solveRecursevily(unsigned char sudoku[][9]){
+    /*
+        Solves the sudoku with recursion.
+    */
+    position empty_cell = findEmptyCell(sudoku);
+
+    if (empty_cell.row == -1 && verifySudoku(sudoku)) return true;
+
+    for (int i = 1; i < 10; i++){
+        sudoku[empty_cell.row][empty_cell.col] = i;
+        if (verifySudoku(sudoku) && solveRecursevily(sudoku)) return true;
+    }
+
+    sudoku[empty_cell.row][empty_cell.col] = 0;
+
+    return false;
+}
+
+bool compareSolution(unsigned char sudoku[][9], unsigned char solution[][9]){
+    /*
+        Compares the sudoku with the solution.
+    */
+    for (int i = 0; i < 81; i++){
+        if (sudoku[i/9][i%9] != solution[i/9][i%9]) return false;
+    }
+    return true;
+}
+
 int main(){
     /*
         Reads a sudoku from the command line, prints it in a readable format and verify its validity.
     */
     unsigned char sudoku[9][9];
-    unsigned char copy_sudoku[9][9];
+    // unsigned char copy_sudoku[9][9];
     unsigned char solution[9][9];
 
-    readSudokuFromFile(sudoku, solution, "../sudoku.csv", 0);
-    copySudoku(sudoku, copy_sudoku);
+    for (int i = 0; i < 1000000; i++){
+        readSudokuFromFile(sudoku, solution, "../sudoku.csv", i);
+        if (!solveRecursevily(sudoku)) {
+            std::cout << "PROBLEM(" << i << "):" << std::endl;
+            exit(1);
+        }
+        else if (!compareSolution(sudoku, solution)){
+            std::cout << "PROBLEM(" << i << "):" << std::endl;
+            exit(1);
+        }
+
+        std::cout << "Solved: " << i << std::endl;
+    }
 
     // for (int i = 0; i < 9; i++){
     //     if (read_sudoku_from_file(sudoku, solution, "../sudoku.csv", i)){
