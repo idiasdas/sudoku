@@ -188,17 +188,64 @@ bool compareSolution(unsigned char sudoku[][9], unsigned char solution[][9]){
     return true;
 }
 
+position findPreviousModifiedCell(unsigned char sudoku[][9], unsigned char original_sudoku[][9]){
+    /*
+        Returns the position of the last modified cell in the sudoku.
+    */
+    position modified_cell = {.row = -1, .col = -1};
+    position empty_cell = findEmptyCell(sudoku);
+    int start = 80;
+    if (empty_cell.row > 0 || empty_cell.col > 0)
+        start = empty_cell.row * 9 + empty_cell.col - 1;
+    else return modified_cell;
+
+    for (int i = start; i >= 0; i--){
+        if (sudoku[i/9][i%9] != original_sudoku[i/9][i%9]){
+            modified_cell.row = i/9;
+            modified_cell.col = i%9;
+            break;
+        }
+    }
+
+    return modified_cell;
+}
+
+bool solveBruteForce(unsigned char sudoku[][9]){
+    /*
+        Solves the sudoku with brute force.
+    */
+    bool solving = true;
+    unsigned char copy_sudoku[9][9];
+    copySudoku(sudoku, copy_sudoku);
+    position current_cell = findEmptyCell(sudoku);
+    while(solving){
+        if (current_cell.row == -1 && verifySudoku(sudoku)) break;
+
+        if (sudoku[current_cell.row][current_cell.col] < 9){
+            sudoku[current_cell.row][current_cell.col]++;
+            if (verifySudoku(sudoku)){
+                current_cell = findEmptyCell(sudoku);
+            }
+        }
+        else{
+            if(current_cell.row == 0 && current_cell.col == 0) return false;
+            sudoku[current_cell.row][current_cell.col] = 0;
+            current_cell = findPreviousModifiedCell(sudoku, copy_sudoku);
+        }
+    }
+    return true;
+}
+
 int main(){
     /*
         Reads a sudoku from the command line, prints it in a readable format and verify its validity.
     */
     unsigned char sudoku[9][9];
-    // unsigned char copy_sudoku[9][9];
     unsigned char solution[9][9];
 
     for (int i = 0; i < 1000000; i++){
         readSudokuFromFile(sudoku, solution, "../sudoku.csv", i);
-        if (!solveRecursevily(sudoku)) {
+        if (!solveBruteForce(sudoku)) {
             std::cout << "PROBLEM(" << i << "):" << std::endl;
             exit(1);
         }
