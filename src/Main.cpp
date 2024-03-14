@@ -122,6 +122,13 @@ bool verifyRowsAndCols(unsigned char sudoku[][9]){
     return true;
 }
 
+bool verifySudoku(unsigned char sudoku[][9]){
+    /*
+        Verifies if the sudoku is valid.
+    */
+    return verifyCells(sudoku) && verifyRowsAndCols(sudoku);
+}
+
 void copySudoku(unsigned char sudoku[][9], unsigned char copy[][9]){
     /*
         Copies the sudoku to the copy array.
