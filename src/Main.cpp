@@ -3,7 +3,7 @@
 #include <string>
 #include <exception>
 
-void read_sudoku( unsigned char sudoku[][9]){
+void readSudoku( unsigned char sudoku[][9]){
     /*
         Reads the sudoku from the console and store it in the sudoku array.
     */
@@ -14,7 +14,7 @@ void read_sudoku( unsigned char sudoku[][9]){
     }
 }
 
-void print_sudoku( unsigned char sudoku[][9]){
+void printSudoku( unsigned char sudoku[][9]){
     /*
         Prints the sudoku in the console in a human readable format.
     */
@@ -26,7 +26,7 @@ void print_sudoku( unsigned char sudoku[][9]){
     }
 }
 
-bool read_sudoku_from_file( unsigned char sudoku[][9], unsigned char solution[][9], const char *filename, unsigned long int problem_number){
+bool readSudokuFromFile( unsigned char sudoku[][9], unsigned char solution[][9], const char *filename, unsigned long int problem_number){
     /*
         Reads the sudoku from a file and store it in the sudoku array.
         The file must have the following format:
@@ -60,7 +60,7 @@ bool read_sudoku_from_file( unsigned char sudoku[][9], unsigned char solution[][
     return true;
 }
 
-bool verify_cell(unsigned char sudoku[][9], int row, int col){
+bool verifyCell(unsigned char sudoku[][9], int row, int col){
     /*
         Returns false if a number is repeared in a 3x3 cell starting at row col.
         It does not consider the 0s as repeated numbers.
@@ -79,20 +79,20 @@ bool verify_cell(unsigned char sudoku[][9], int row, int col){
     return true;
 }
 
-bool verify_cells(unsigned char sudoku[][9]){
+bool verifyCells(unsigned char sudoku[][9]){
     /*
         Returns false if a number is repeated in any 3x3 cell in the sudoku.
         It does not consider the 0s as repeated numbers.
     */
     for (int i = 0; i < 3; i++){
         for (int j = 0; j <3; j++){
-            if (!verify_cell(sudoku, i*3, j*3)) return false;
+            if (!verifyCell(sudoku, i*3, j*3)) return false;
         }
     }
     return true;
 }
 
-bool verify_rows_and_cols(unsigned char sudoku[][9]){
+bool verifyRowsAndCols(unsigned char sudoku[][9]){
     /*
         Verifies if any number is repeated in any row or column of the sudoku.
     */
@@ -139,7 +139,7 @@ int main(){
     unsigned char copy_sudoku[9][9];
     unsigned char solution[9][9];
 
-    read_sudoku_from_file(sudoku, solution, "../sudoku.csv", 0);
+    readSudokuFromFile(sudoku, solution, "../sudoku.csv", 0);
     copySudoku(sudoku, copy_sudoku);
 
     // for (int i = 0; i < 9; i++){
