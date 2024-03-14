@@ -56,7 +56,6 @@ bool readSudokuFromFile( unsigned char sudoku[][9], unsigned char solution[][9],
         return false;
     }
 
-    // std::cout << line << std::endl;
     for(int i = 0; i < 81; i++){
         sudoku[i/9][i%9] = (unsigned char) (line[i] - '0');
         if(solution != nullptr) solution[i/9][i%9] = (unsigned char) (line[i+82] - '0');
@@ -129,7 +128,7 @@ bool verifyRowsAndCols(unsigned char sudoku[][9]){
 
 bool verifySudoku(unsigned char sudoku[][9]){
     /*
-        Verifies if the sudoku is valid.
+        Verifies if the sudoku board is valid.
     */
     return verifyCells(sudoku) && verifyRowsAndCols(sudoku);
 }
@@ -146,6 +145,7 @@ void copySudoku(unsigned char sudoku[][9], unsigned char copy[][9]){
 position findEmptyCell(unsigned char sudoku[][9]){
     /*
         Returns the position of the first empty cell in the sudoku.
+        If no cell is empty, it returns a position with row and col equal to -1.
     */
     position empty_cell;
     empty_cell.row = -1;
@@ -191,6 +191,8 @@ bool compareSolution(unsigned char sudoku[][9], unsigned char solution[][9]){
 position findPreviousModifiedCell(unsigned char sudoku[][9], unsigned char original_sudoku[][9]){
     /*
         Returns the position of the last modified cell in the sudoku.
+        If no cell was modified, it returns a position with row and col equal to -1.
+        It assumes that every modification was made in order (left right, up down).
     */
     position modified_cell = {.row = -1, .col = -1};
     position empty_cell = findEmptyCell(sudoku);
@@ -212,7 +214,7 @@ position findPreviousModifiedCell(unsigned char sudoku[][9], unsigned char origi
 
 bool solveBruteForce(unsigned char sudoku[][9]){
     /*
-        Solves the sudoku with brute force.
+        Solves the sudoku with brute force. It follows the idea of the recursive algorithm, but it uses a while loop instead of recursion.
     */
     bool solving = true;
     unsigned char copy_sudoku[9][9];
@@ -256,18 +258,6 @@ int main(){
 
         std::cout << "Solved: " << i << std::endl;
     }
-
-    // for (int i = 0; i < 9; i++){
-    //     if (read_sudoku_from_file(sudoku, solution, "../sudoku.csv", i)){
-    //         std::cout << "PROBLEM(" << i << "):" << std::endl;
-    //         print_sudoku(sudoku);
-    //         std::cout << "SOLUTION:" << std::endl;
-    //         print_sudoku(solution);
-    //         std::cout << "---------------:" << std::endl;
-    //     }
-    // }
-
-
 
     return 0;
 }
