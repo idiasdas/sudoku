@@ -122,14 +122,25 @@ bool verify_rows_and_cols(unsigned char sudoku[][9]){
     return true;
 }
 
+void copySudoku(unsigned char sudoku[][9], unsigned char copy[][9]){
+    /*
+        Copies the sudoku to the copy array.
+    */
+    for (int i = 0; i < 81; i++){
+        copy[i/9][i%9] = sudoku[i/9][i%9];
+    }
+}
+
 int main(){
     /*
         Reads a sudoku from the command line, prints it in a readable format and verify its validity.
     */
     unsigned char sudoku[9][9];
+    unsigned char copy_sudoku[9][9];
     unsigned char solution[9][9];
 
     read_sudoku_from_file(sudoku, solution, "../sudoku.csv", 0);
+    copySudoku(sudoku, copy_sudoku);
 
     // for (int i = 0; i < 9; i++){
     //     if (read_sudoku_from_file(sudoku, solution, "../sudoku.csv", i)){
@@ -140,5 +151,8 @@ int main(){
     //         std::cout << "---------------:" << std::endl;
     //     }
     // }
+
+
+
     return 0;
 }
