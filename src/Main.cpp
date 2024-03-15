@@ -42,8 +42,10 @@ bool readSudokuFromFile( unsigned char sudoku[][9], unsigned char solution[][9],
 
     try{
         sudoku_file.open(filename);
-        std::getline(sudoku_file, line); // skips header
-        sudoku_file.seekg(164 * (problem_number), std::ios::cur); //Each line has 163 characters (81 digits + ',' + 81 digits + '\n')
+        // skips header
+        std::getline(sudoku_file, line);
+        // Jumps to the <problem_number> line. Each line has 164 characters (81 digits + ',' + 81 digits + '\n')
+        sudoku_file.seekg(164 * (problem_number), std::ios::cur);
         std::getline(sudoku_file, line);
     }
     catch( std::exception &e){
