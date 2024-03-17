@@ -8,7 +8,7 @@ struct position{
     int col;
 };
 
-void readSudoku( unsigned char sudoku[][9]){
+void readSudoku( unsigned char sudoku[9][9]){
     /*
         Reads the sudoku from the console and store it in the sudoku array.
     */
@@ -19,7 +19,7 @@ void readSudoku( unsigned char sudoku[][9]){
     }
 }
 
-void printSudoku( unsigned char sudoku[][9]){
+void printSudoku( unsigned char sudoku[9][9]){
     /*
         Prints the sudoku in the console in a human readable format.
     */
@@ -31,7 +31,7 @@ void printSudoku( unsigned char sudoku[][9]){
     }
 }
 
-bool readSudokuFromFile( unsigned char sudoku[][9], unsigned char solution[][9], const char *filename, unsigned long int problem_number){
+bool readSudokuFromFile( unsigned char sudoku[9][9], unsigned char solution[9][9], const char *filename, unsigned long int problem_number){
     /*
         Reads the sudoku from a file and store it in the sudoku array.
         The file must have the following format:
@@ -66,7 +66,7 @@ bool readSudokuFromFile( unsigned char sudoku[][9], unsigned char solution[][9],
     return true;
 }
 
-bool verifyCell(unsigned char sudoku[][9], int row, int col){
+bool verifyCell(unsigned char sudoku[9][9], int row, int col){
     /*
         Returns false if a number is repeared in a 3x3 cell starting at row col.
         It does not consider the 0s as repeated numbers.
@@ -85,7 +85,7 @@ bool verifyCell(unsigned char sudoku[][9], int row, int col){
     return true;
 }
 
-bool verifyCells(unsigned char sudoku[][9]){
+bool verifyCells(unsigned char sudoku[9][9]){
     /*
         Returns false if a number is repeated in any 3x3 cell in the sudoku.
         It does not consider the 0s as repeated numbers.
@@ -98,7 +98,7 @@ bool verifyCells(unsigned char sudoku[][9]){
     return true;
 }
 
-bool verifyRowsAndCols(unsigned char sudoku[][9]){
+bool verifyRowsAndCols(unsigned char sudoku[9][9]){
     /*
         Verifies if any number is repeated in any row or column of the sudoku.
     */
@@ -128,14 +128,14 @@ bool verifyRowsAndCols(unsigned char sudoku[][9]){
     return true;
 }
 
-bool verifySudoku(unsigned char sudoku[][9]){
+bool verifySudoku(unsigned char sudoku[9][9]){
     /*
         Verifies if the sudoku board is valid.
     */
     return verifyCells(sudoku) && verifyRowsAndCols(sudoku);
 }
 
-void copySudoku(unsigned char sudoku[][9], unsigned char copy[][9]){
+void copySudoku(unsigned char sudoku[9][9], unsigned char copy[9][9]){
     /*
         Copies the sudoku to the copy array.
     */
@@ -144,7 +144,7 @@ void copySudoku(unsigned char sudoku[][9], unsigned char copy[][9]){
     }
 }
 
-position findEmptyCell(unsigned char sudoku[][9]){
+position findEmptyCell(unsigned char sudoku[9][9]){
     /*
         Returns the position of the first empty cell in the sudoku.
         If no cell is empty, it returns a position with row and col equal to -1.
@@ -162,7 +162,7 @@ position findEmptyCell(unsigned char sudoku[][9]){
     return empty_cell;
 }
 
-bool solveRecursevily(unsigned char sudoku[][9]){
+bool solveRecursevily(unsigned char sudoku[9][9]){
     /*
         Solves the sudoku with recursion.
     */
@@ -180,7 +180,7 @@ bool solveRecursevily(unsigned char sudoku[][9]){
     return false;
 }
 
-bool compareSolution(unsigned char sudoku[][9], unsigned char solution[][9]){
+bool compareSolution(unsigned char sudoku[9][9], unsigned char solution[9][9]){
     /*
         Compares the sudoku with the solution.
     */
@@ -190,7 +190,7 @@ bool compareSolution(unsigned char sudoku[][9], unsigned char solution[][9]){
     return true;
 }
 
-position findPreviousModifiedCell(unsigned char sudoku[][9], unsigned char original_sudoku[][9]){
+position findPreviousModifiedCell(unsigned char sudoku[9][9], unsigned char original_sudoku[9][9]){
     /*
         Returns the position of the last modified cell in the sudoku.
         If no cell was modified, it returns a position with row and col equal to -1.
@@ -214,7 +214,7 @@ position findPreviousModifiedCell(unsigned char sudoku[][9], unsigned char origi
     return modified_cell;
 }
 
-bool solveBruteForce(unsigned char sudoku[][9]){
+bool solveBruteForce(unsigned char sudoku[9][9]){
     /*
         Solves the sudoku with brute force. It follows the idea of the recursive algorithm, but it uses a while loop instead of recursion.
     */
