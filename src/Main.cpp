@@ -3,11 +3,6 @@
 #include <string>
 #include <exception>
 
-struct position{
-    int row;
-    int col;
-};
-
 void readSudoku( unsigned char sudoku[9][9]){
     /*
         Reads the sudoku from the console and store it in the sudoku array.
@@ -144,18 +139,18 @@ void copySudoku(unsigned char sudoku[9][9], unsigned char copy[9][9]){
     }
 }
 
-position findEmptyCell(unsigned char sudoku[9][9]){
+std::pair<int, int> findEmptyCell(unsigned char sudoku[9][9]){
     /*
         Returns the position of the first empty cell in the sudoku.
         If no cell is empty, it returns a position with row and col equal to -1.
     */
-    position empty_cell;
-    empty_cell.row = -1;
-    empty_cell.col = -1;
+    std::pair<int, int> empty_cell;
+    empty_cell.first = -1;
+    empty_cell.second = -1;
     for (int i = 0; i < 81; i++){
         if (sudoku[i/9][i%9] == 0){
-            empty_cell.row = i/9;
-            empty_cell.col = i%9;
+            empty_cell.first = i/9;
+            empty_cell.second = i%9;
             break;
         }
     }
@@ -166,16 +161,16 @@ bool solveRecursevily(unsigned char sudoku[9][9]){
     /*
         Solves the sudoku with recursion.
     */
-    position empty_cell = findEmptyCell(sudoku);
+    std::pair empty_cell = findEmptyCell(sudoku);
 
-    if (empty_cell.row == -1 && verifySudoku(sudoku)) return true;
+    if (empty_cell.first == -1 && verifySudoku(sudoku)) return true;
 
     for (int i = 1; i < 10; i++){
-        sudoku[empty_cell.row][empty_cell.col] = i;
+        sudoku[empty_cell.first][empty_cell.second] = i;
         if (verifySudoku(sudoku) && solveRecursevily(sudoku)) return true;
     }
 
-    sudoku[empty_cell.row][empty_cell.col] = 0;
+    sudoku[empty_cell.first][empty_cell.second] = 0;
 
     return false;
 }
@@ -190,23 +185,23 @@ bool compareSolution(unsigned char sudoku[9][9], unsigned char solution[9][9]){
     return true;
 }
 
-position findPreviousModifiedCell(unsigned char sudoku[9][9], unsigned char original_sudoku[9][9]){
+std::pair<int, int> findPreviousModifiedCell(unsigned char sudoku[9][9], unsigned char original_sudoku[9][9]){
     /*
         Returns the position of the last modified cell in the sudoku.
         If no cell was modified, it returns a position with row and col equal to -1.
         It assumes that every modification was made in order (left right, up down).
     */
-    position modified_cell = {.row = -1, .col = -1};
-    position empty_cell = findEmptyCell(sudoku);
+    std::pair<int, int> modified_cell = {-1, -1};
+    std::pair<int, int> empty_cell = findEmptyCell(sudoku);
     int start = 80;
-    if (empty_cell.row > 0 || empty_cell.col > 0)
-        start = empty_cell.row * 9 + empty_cell.col - 1;
+    if (empty_cell.first > 0 || empty_cell.second > 0)
+        start = empty_cell.first * 9 + empty_cell.second - 1;
     else return modified_cell;
 
     for (int i = start; i >= 0; i--){
         if (sudoku[i/9][i%9] != original_sudoku[i/9][i%9]){
-            modified_cell.row = i/9;
-            modified_cell.col = i%9;
+            modified_cell.first = i/9;
+            modified_cell.second = i%9;
             break;
         }
     }
@@ -221,19 +216,19 @@ bool solveBruteForce(unsigned char sudoku[9][9]){
     bool solving = true;
     unsigned char copy_sudoku[9][9];
     copySudoku(sudoku, copy_sudoku);
-    position current_cell = findEmptyCell(sudoku);
+    std::pair<int, int> current_cell = findEmptyCell(sudoku);
     while(solving){
-        if (current_cell.row == -1 && verifySudoku(sudoku)) break;
+        if (current_cell.first == -1 && verifySudoku(sudoku)) break;
 
-        if (sudoku[current_cell.row][current_cell.col] < 9){
-            sudoku[current_cell.row][current_cell.col]++;
+        if (sudoku[current_cell.first][current_cell.second] < 9){
+            sudoku[current_cell.first][current_cell.second]++;
             if (verifySudoku(sudoku)){
                 current_cell = findEmptyCell(sudoku);
             }
         }
         else{
-            if(current_cell.row == 0 && current_cell.col == 0) return false;
-            sudoku[current_cell.row][current_cell.col] = 0;
+            if(current_cell.first == 0 && current_cell.second == 0) return false;
+            sudoku[current_cell.first][current_cell.second] = 0;
             current_cell = findPreviousModifiedCell(sudoku, copy_sudoku);
         }
     }
@@ -248,7 +243,10 @@ int main(){
     unsigned char solution[9][9];
 
     for (int i = 0; i < 1000000; i++){
-        readSudokuFromFile(sudoku, solution, "../sudoku.csv", i);
+        if(! readSudokuFromFile(sudoku, solution, "../sudoku.csv", i)) {
+            std::cout << "PROBLEM(" << i << "):" << std::endl;
+            exit(1);
+        }
         if (!solveBruteForce(sudoku)) {
             std::cout << "PROBLEM(" << i << "):" << std::endl;
             exit(1);
