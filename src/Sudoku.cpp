@@ -1,5 +1,16 @@
 #include "Sudoku.h"
 
+Sudoku::Sudoku(){
+    /*
+        Initializes the sudoku array with zeros.
+    */
+    for (int i = 0; i < 81; i++){
+        m_sudoku[i/9][i%9] = 0;
+        m_original_sudoku[i/9][i%9] = 0;
+        m_solution[i/9][i%9] = 0;
+    }
+}
+
 void Sudoku::ReadSudoku(){
     /*
         Reads the sudoku from the console and store it in the sudoku array.
@@ -52,6 +63,7 @@ bool Sudoku::ReadSudokuFromFile(const char *filename, unsigned long int problem_
 
     for(int i = 0; i < 81; i++){
         m_sudoku[i/9][i%9] = (unsigned char) (line[i] - '0');
+        m_original_sudoku[i/9][i%9] = (unsigned char) (line[i] - '0');
         m_solution[i/9][i%9] = (unsigned char) (line[i+82] - '0');
     }
 
@@ -201,22 +213,20 @@ bool Sudoku::SolveBruteForce(){
         Solves the sudoku with brute force. It follows the idea of the recursive algorithm, but it uses a while loop instead of recursion.
     */
     bool solving = true;
-    unsigned char copy_sudoku[9][9];
-    copySudoku(sudoku, copy_sudoku);
-    std::pair<int, int> current_cell = findEmptyCell(sudoku);
+    std::pair<int, int> current_cell = FindEmptyCell();
     while(solving){
-        if (current_cell.first == -1 && verifySudoku(sudoku)) break;
+        if (current_cell.first == -1 && VerifySudoku()) break;
 
-        if (sudoku[current_cell.first][current_cell.second] < 9){
-            sudoku[current_cell.first][current_cell.second]++;
-            if (verifySudoku(sudoku)){
-                current_cell = findEmptyCell(sudoku);
+        if (m_sudoku[current_cell.first][current_cell.second] < 9){
+            m_sudoku[current_cell.first][current_cell.second]++;
+            if (VerifySudoku()){
+                current_cell = FindEmptyCell();
             }
         }
         else{
             if(current_cell.first == 0 && current_cell.second == 0) return false;
-            sudoku[current_cell.first][current_cell.second] = 0;
-            current_cell = findPreviousModifiedCell(sudoku, copy_sudoku);
+            m_sudoku[current_cell.first][current_cell.second] = 0;
+            current_cell = FindPreviousModifiedCell();
         }
     }
     return true;

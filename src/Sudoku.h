@@ -12,6 +12,7 @@ private:
     unsigned char m_solution[9][9];
 
 public:
+    Sudoku();
     void ReadSudoku();
     void PrintSudoku();
     bool ReadSudokuFromFile(const char *filename, unsigned long int problem_number);
